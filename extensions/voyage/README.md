@@ -1,6 +1,6 @@
 # OpenClaw Voyage Provider
 
-Official OpenClaw memory embedding provider plugin for Voyage AI.
+Official OpenClaw memory embedding provider plugin for VoyageAI by MongoDB.
 
 Install from OpenClaw:
 

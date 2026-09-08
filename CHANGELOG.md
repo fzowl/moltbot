@@ -16,6 +16,7 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- **VoyageAI by MongoDB embeddings:** rebrand the Voyage embedding provider as VoyageAI by MongoDB across plugin metadata, README, and provider catalog; refresh the model list to the current voyage-4 generation plus domain and open-weight models; and add contextualized-chunk model support (voyage-context-4) that calls the contextualized_embed API with a flat list of inputs, server-side auto-chunking, and a full-window chunk size.
 - **Plugin branding:** package your plugin icon at `assets/icon.png` instead of a top-level manifest URL; OpenClaw loads the packaged image without a network request, and missing or invalid icons do not prevent the plugin from loading. (#131510) Thanks @Patrick-Erichsen.
 - **GPT-6 Astra async tools and steering:** on OpenAI Platform API-key routes using the built-in OpenClaw runtime and official Responses endpoint, run direct function tools asynchronously, steer active responses over cached WebSockets, and retain request prefixes when changing reasoning effort under the documented configuration; keep steering history and encrypted reasoning through continuations. (#138046, #138434)
 - **GPT-6 Astra reasoning:** keep supported reasoning and sampling settings correct when catalog metadata is absent, add `/think ultra` orchestration for OpenClaw and native Codex runtimes, and retain configured Azure deployment capabilities. (#138626, #138739)

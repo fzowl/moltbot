@@ -2251,18 +2251,18 @@
     },
     {
       "name": "@openclaw/voyage-provider",
-      "description": "OpenClaw Voyage embedding provider plugin.",
+      "description": "OpenClaw VoyageAI by MongoDB embedding provider plugin.",
       "source": "official",
       "kind": "provider",
       "openclaw": {
         "plugin": {
           "id": "voyage",
-          "label": "Voyage"
+          "label": "VoyageAI by MongoDB"
         },
         "providers": [
           {
             "id": "voyage",
-            "name": "Voyage",
+            "name": "VoyageAI by MongoDB",
             "docs": "/reference/memory-config",
             "categories": [
               "cloud"

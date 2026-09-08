@@ -5,6 +5,7 @@ import {
   sanitizeEmbeddingCacheHeaders,
 } from "openclaw/plugin-sdk/embedding-provider-adapter";
 import type { MemoryEmbeddingProviderAdapter } from "openclaw/plugin-sdk/memory-core-host-engine-embeddings";
+import { isVoyageContextualizedModel } from "./contextualized-embedding.js";
 import { runVoyageEmbeddingBatches } from "./embedding-batch.js";
 import {
   createVoyageEmbeddingProvider,
@@ -25,6 +26,9 @@ export const voyageMemoryEmbeddingProviderAdapter: MemoryEmbeddingProviderAdapte
       provider: "voyage",
       fallback: "none",
     });
+    // Contextualized models use the contextualized_embed endpoint, which the
+    // Batch API does not cover; fall back to the synchronous provider path.
+    const supportsBatch = !isVoyageContextualizedModel(client.model);
     return {
       provider,
       runtime: {
@@ -35,22 +39,24 @@ export const voyageMemoryEmbeddingProviderAdapter: MemoryEmbeddingProviderAdapte
           model: client.model,
           headers: sanitizeEmbeddingCacheHeaders(client.headers, ["authorization"]),
         },
-        batchEmbed: async (batch) => {
-          const byCustomId = await runVoyageEmbeddingBatches({
-            client,
-            agentId: batch.agentId,
-            requests: batch.chunks.map((chunk, index) => ({
-              custom_id: String(index),
-              body: { input: chunk.text },
-            })),
-            wait: batch.wait,
-            concurrency: batch.concurrency,
-            pollIntervalMs: batch.pollIntervalMs,
-            timeoutMs: batch.timeoutMs,
-            debug: batch.debug,
-          });
-          return mapBatchEmbeddingsByIndex(byCustomId, batch.chunks.length);
-        },
+        batchEmbed: !supportsBatch
+          ? undefined
+          : async (batch) => {
+              const byCustomId = await runVoyageEmbeddingBatches({
+                client,
+                agentId: batch.agentId,
+                requests: batch.chunks.map((chunk, index) => ({
+                  custom_id: String(index),
+                  body: { input: chunk.text },
+                })),
+                wait: batch.wait,
+                concurrency: batch.concurrency,
+                pollIntervalMs: batch.pollIntervalMs,
+                timeoutMs: batch.timeoutMs,
+                debug: batch.debug,
+              });
+              return mapBatchEmbeddingsByIndex(byCustomId, batch.chunks.length);
+            },
       },
     };
   },

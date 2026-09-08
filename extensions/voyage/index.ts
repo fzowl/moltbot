@@ -4,8 +4,8 @@ import { voyageMemoryEmbeddingProviderAdapter } from "./memory-embedding-adapter
 
 export default definePluginEntry({
   id: "voyage",
-  name: "Voyage Embeddings",
-  description: "Voyage memory embedding provider plugin",
+  name: "VoyageAI by MongoDB Embeddings",
+  description: "VoyageAI by MongoDB memory embedding provider plugin",
   register(api) {
     api.registerEmbeddingProvider(voyageMemoryEmbeddingProviderAdapter);
   },
