@@ -314,7 +314,7 @@ with both, such as a local reranker, System One, or ONNX model.
 The gate's questions are relevance questions, so any reranker works as its
 Decision model through the bundled [Rerank provider](/providers/rerank): point
 `models.providers.rerank` at a vLLM, TEI, Infinity, Cohere, Jina, or
-Voyage `/rerank` endpoint and select `rerank/<model id>`.
+Voyage AI by MongoDB `/rerank` endpoint and select `rerank/<model id>`.
 
 The recommended model is
 [`Alibaba-NLP/gte-reranker-modernbert-base`](https://huggingface.co/Alibaba-NLP/gte-reranker-modernbert-base)

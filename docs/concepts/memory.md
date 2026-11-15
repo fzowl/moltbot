@@ -242,7 +242,7 @@ for any supported provider.
 
 <Info>
 OpenClaw uses OpenAI embeddings by default. Set
-`memory.search.provider` explicitly to use Gemini, Voyage,
+`memory.search.provider` explicitly to use Gemini, Voyage AI by MongoDB,
 Mistral, Bedrock, DeepInfra, local GGUF, Ollama, LM Studio, GitHub Copilot, or
 a generic OpenAI-compatible endpoint.
 </Info>

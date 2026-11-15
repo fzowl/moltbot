@@ -74,7 +74,7 @@ Configure the provider plugin before selecting its model:
   configuration, and calls do not enable web grounding.
 - [Rerank](/providers/rerank) is bundled and uses any reranker behind a
   `/rerank` endpoint: vLLM, Hugging Face TEI, Infinity, llama.cpp, Cohere,
-  Jina, or Voyage. List the endpoint and model under `models.providers.rerank`;
+  Jina, or Voyage AI by MongoDB. List the endpoint and model under `models.providers.rerank`;
   self-hosted servers need no credential. A reranker answers `boolean`,
   `choice`, and `sort` questions with relevance scores, which suits matching
   judgments such as the Knowledge recall gate, not rubric scoring.

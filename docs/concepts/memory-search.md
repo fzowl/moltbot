@@ -127,7 +127,7 @@ chunks. Set these with `queryInputType` and `documentInputType`; see
 | [oMLX](/providers/omlx) | `omlx`              | No            | Apple Silicon; explicit embedding model |
 | OpenAI                  | `openai`            | Depends       | API key or eligible Codex OAuth         |
 | OpenAI-compatible       | `openai-compatible` | Usually       | Generic `/v1/embeddings` endpoint       |
-| Voyage                  | `voyage`            | Yes           | Default model `voyage-4-large`          |
+| Voyage AI by MongoDB    | `voyage`            | Yes           | Default model `voyage-4-large`          |
 
 To move off Ollama, [llmman](/providers/llmman#advanced-configuration) serves the same `/api/embed`, so `provider: "ollama"` only needs a new `remote.baseUrl`.
 
