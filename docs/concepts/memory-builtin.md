@@ -113,19 +113,19 @@ openclaw plugins install @openclaw/llama-cpp-provider
 
 ## Supported embedding providers
 
-| Provider          | ID                  | Notes                               |
-| ----------------- | ------------------- | ----------------------------------- |
-| Bedrock           | `bedrock`           | Uses the AWS credential chain       |
-| DeepInfra         | `deepinfra`         | Default: `BAAI/bge-m3`              |
-| Gemini            | `gemini`            | Supports multimodal (image + audio) |
-| GitHub Copilot    | `github-copilot`    | Uses your Copilot subscription      |
-| LM Studio         | `lmstudio`          | Local/self-hosted                   |
-| Local             | `local`             | OpenClaw-managed llama.cpp server   |
-| Mistral           | `mistral`           |                                     |
-| Ollama            | `ollama`            | Local/self-hosted                   |
-| OpenAI            | `openai`            | Default: `text-embedding-3-small`   |
-| OpenAI-compatible | `openai-compatible` | Generic `/v1/embeddings` endpoint   |
-| Voyage            | `voyage`            |                                     |
+| Provider             | ID                  | Notes                               |
+| -------------------- | ------------------- | ----------------------------------- |
+| Bedrock              | `bedrock`           | Uses the AWS credential chain       |
+| DeepInfra            | `deepinfra`         | Default: `BAAI/bge-m3`              |
+| Gemini               | `gemini`            | Supports multimodal (image + audio) |
+| GitHub Copilot       | `github-copilot`    | Uses your Copilot subscription      |
+| LM Studio            | `lmstudio`          | Local/self-hosted                   |
+| Local                | `local`             | OpenClaw-managed llama.cpp server   |
+| Mistral              | `mistral`           |                                     |
+| Ollama               | `ollama`            | Local/self-hosted                   |
+| OpenAI               | `openai`            | Default: `text-embedding-3-small`   |
+| OpenAI-compatible    | `openai-compatible` | Generic `/v1/embeddings` endpoint   |
+| Voyage AI by MongoDB | `voyage`            |                                     |
 
 Set `memory.search.provider` to switch away from OpenAI.
 

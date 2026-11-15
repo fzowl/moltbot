@@ -1,5 +1,5 @@
 ---
-summary: "Use any /rerank endpoint (vLLM, TEI, Infinity, Cohere, Jina, Voyage) as a Decision model"
+summary: "Use any /rerank endpoint (vLLM, TEI, Infinity, Cohere, Jina, Voyage AI by MongoDB) as a Decision model"
 read_when:
   - You already run a reranker and want to use it as a Decision model
   - You want a local, keyless Decision model for the Knowledge recall gate
@@ -29,16 +29,16 @@ Any server that speaks the common `/rerank` API:
 | Infinity              | `http://127.0.0.1:7997`       |
 | Cohere                | `https://api.cohere.com/v2`   |
 | Jina                  | `https://api.jina.ai/v1`      |
-| Voyage                | `https://api.voyageai.com/v1` |
+| Voyage AI by MongoDB  | `https://api.voyageai.com/v1` |
 
 OpenClaw posts to `<baseUrl>/rerank` with `model`, `query`, and the documents.
 Most servers read the documents from `documents`; TEI reads `texts`. When an
 endpoint rejects the first form, OpenClaw retries once with `texts` and
 remembers the working form for that endpoint.
 
-Responses may use the Cohere shape (`results[].relevance_score`), Voyage's
+Responses may use the Cohere shape (`results[].relevance_score`), Voyage AI's
 `data[]`, or TEI's bare array of `{ index, score }`. Scores must be relevance
-probabilities from 0 to 1. Cohere, Jina and Voyage return them, as does TEI
+probabilities from 0 to 1. Cohere, Jina and Voyage AI return them, as does TEI
 with `raw_scores` off; check the score setting of other servers. A response with any score outside that range is
 rejected as `invalid-response`: rescaling a batch from its own values would
 move one page's score with its neighbours, so serve raw-logit models (for
@@ -71,7 +71,8 @@ Any reranker your server hosts works; `Alibaba-NLP/gte-reranker-modernbert-base`
 is the recommended model for the Knowledge recall gate (see below).
 
 - The model `id` is sent as `model` in each request. Use the name your server
-  expects.
+  expects; for Voyage AI by MongoDB that is `rerank-3`, `rerank-3-lite`,
+  `rerank-2.5`, or `rerank-2.5-lite`.
 - A self-hosted server needs no credential. For a hosted API, set
   `models.providers.rerank.apiKey` (a [SecretRef](/gateway/secrets) is
   recommended) or the `RERANK_API_KEY` environment variable. OpenClaw sends it

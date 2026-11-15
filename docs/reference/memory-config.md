@@ -115,7 +115,7 @@ models; see [interactive memory setup](/cli/configure#memory-section).
 
 When `provider` is not set, OpenClaw uses OpenAI embeddings. Set `provider`
 explicitly to use Bedrock, DeepInfra, Gemini, GitHub Copilot, Mistral, Ollama,
-Voyage, a local GGUF model, or an OpenAI-compatible `/v1/embeddings` endpoint.
+Voyage AI by MongoDB, a local GGUF model, or an OpenAI-compatible `/v1/embeddings` endpoint.
 Legacy configs that still say `provider: "auto"` resolve to `openai`.
 The provider sentinels `none` and `auto`, and fallback `none`, are case-insensitive.
 Custom provider IDs retain their spelling; config writes keep authored casing and environment references.
@@ -148,7 +148,7 @@ use lexical FTS ranking when embeddings are unavailable.
 
 Explicit non-local providers do not fall back to FTS-only recall. If you set `memory.search.provider` to
 a concrete remote-backed provider such as Bedrock, DeepInfra, Gemini, GitHub
-Copilot, LM Studio, Mistral, Ollama, OpenAI, Voyage, or an OpenAI-compatible
+Copilot, LM Studio, Mistral, Ollama, OpenAI, Voyage AI by MongoDB, or an OpenAI-compatible
 custom provider, and that provider is unavailable at runtime, `memory_search`
 returns an unavailable result instead of silently using FTS-only recall. Fix the
 provider/auth configuration, switch to a reachable provider, or set
@@ -189,17 +189,17 @@ OpenAI-compatible hosts keep the configured header unchanged.
 
 Remote embedding authentication depends on the provider. Bedrock uses the AWS SDK default credential chain (instance roles, SSO, access keys, or a Bedrock API key).
 
-| Provider       | Env var                                             | Config key                          |
-| -------------- | --------------------------------------------------- | ----------------------------------- |
-| Bedrock        | AWS credential chain, or `AWS_BEARER_TOKEN_BEDROCK` | No API key needed                   |
-| DeepInfra      | `DEEPINFRA_API_KEY`                                 | `models.providers.deepinfra.apiKey` |
-| Gemini         | `GEMINI_API_KEY`                                    | `models.providers.google.apiKey`    |
-| GitHub Copilot | `COPILOT_GITHUB_TOKEN`                              | Auth profile via device login       |
-| Mistral        | `MISTRAL_API_KEY`                                   | `models.providers.mistral.apiKey`   |
-| Ollama         | `OLLAMA_API_KEY` (placeholder)                      | --                                  |
-| oMLX           | `OMLX_API_KEY` (via setup or `remote.apiKey`)       | `models.providers.omlx.apiKey`      |
-| OpenAI         | `OPENAI_API_KEY`                                    | `models.providers.openai.apiKey`    |
-| Voyage         | `VOYAGE_API_KEY`                                    | `models.providers.voyage.apiKey`    |
+| Provider             | Env var                                             | Config key                          |
+| -------------------- | --------------------------------------------------- | ----------------------------------- |
+| Bedrock              | AWS credential chain, or `AWS_BEARER_TOKEN_BEDROCK` | No API key needed                   |
+| DeepInfra            | `DEEPINFRA_API_KEY`                                 | `models.providers.deepinfra.apiKey` |
+| Gemini               | `GEMINI_API_KEY`                                    | `models.providers.google.apiKey`    |
+| GitHub Copilot       | `COPILOT_GITHUB_TOKEN`                              | Auth profile via device login       |
+| Mistral              | `MISTRAL_API_KEY`                                   | `models.providers.mistral.apiKey`   |
+| Ollama               | `OLLAMA_API_KEY` (placeholder)                      | --                                  |
+| oMLX                 | `OMLX_API_KEY` (via setup or `remote.apiKey`)       | `models.providers.omlx.apiKey`      |
+| OpenAI               | `OPENAI_API_KEY`                                    | `models.providers.openai.apiKey`    |
+| Voyage AI by MongoDB | `VOYAGE_API_KEY`                                    | `models.providers.voyage.apiKey`    |
 
 For custom OpenAI-compatible providers, `models.providers.<id>.apiKey` can name
 an API-key or bearer-token profile saved with [`openclaw models auth`](/cli/models#auth-profiles),
@@ -508,6 +508,44 @@ again to avoid reusing vectors from the previous model.
     ```text
     arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0
     ```
+
+  </Accordion>
+  <Accordion title="Voyage AI by MongoDB">
+    ### Voyage embedding config
+
+    Set `VOYAGE_API_KEY` (or `models.providers.voyage.apiKey`) and choose the provider. The default model is `voyage-4-large`.
+
+    ```json5
+    {
+      memory: {
+        search: {
+          provider: "voyage",
+          model: "voyage-4-large",
+          outputDimensionality: 512,
+        },
+      },
+    }
+    ```
+
+    | Key                    | Type     | Default          | Description                                                  |
+    | ---------------------- | -------- | ---------------- | ------------------------------------------------------------ |
+    | `model`                | `string` | `voyage-4-large` | Any Voyage text embedding model; unknown models are rejected by the API |
+    | `outputDimensionality` | `number` | model default    | Sent as `output_dimension`; omitted unless set               |
+
+    **Text models:**
+
+    | Model ID                                                                    | Default Dims | Configurable Dims | Context |
+    | --------------------------------------------------------------------------- | ------------ | ----------------- | ------- |
+    | `voyage-4-large`, `voyage-4`, `voyage-4-lite`, `voyage-code-4`              | 1024         | 256, 512, 1024, 2048 | 32k  |
+    | `voyage-3-large`, `voyage-3.5`, `voyage-3.5-lite`, `voyage-code-3`          | 1024         | 256, 512, 1024, 2048 | 32k  |
+    | `voyage-finance-2`                                                          | 1024         | --                | 32k     |
+    | `voyage-law-2`                                                              | 1024         | --                | 16k     |
+
+    Voyage validates `outputDimensionality` per model and answers an unsupported size with an error that lists the accepted values. Memory indexing sends at most 1,000 inputs per request. `outputDimensionality` is part of the index identity; after changing it, rebuild with `openclaw memory index --force --agent <id>`. Contextualized (`voyage-context-*`) and multimodal (`voyage-multimodal-*`) models use other endpoints and are not supported by this provider.
+
+    Batch indexing (`memory.search.remote.batch.enabled`) uses the Voyage Batch API with the same model and dimension.
+
+    **Endpoint:** keys that start with `al-` (issued through MongoDB Atlas) use `https://ai.mongodb.com/v1`; every other key uses `https://api.voyageai.com/v1`. A base URL set in `memory.search.remote.baseUrl` or `models.providers.voyage.baseUrl` always wins.
 
   </Accordion>
   <Accordion title="Local (managed llama.cpp server)">

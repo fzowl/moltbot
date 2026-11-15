@@ -98,6 +98,7 @@ export async function runVoyageEmbeddingBatches(
   params: {
     client: RemoteEmbeddingClient;
     agentId: string;
+    outputDimension?: number;
     requests: VoyageBatchRequest[];
   } & EmbeddingBatchExecutionParams,
 ): Promise<Map<string, number[]>> {
@@ -126,6 +127,9 @@ export async function runVoyageEmbeddingBatches(
           request_params: {
             model: client.model,
             input_type: "document",
+            ...(params.outputDimension !== undefined
+              ? { output_dimension: params.outputDimension }
+              : {}),
           },
           metadata: {
             source: "clawdbot-memory",

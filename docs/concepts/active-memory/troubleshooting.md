@@ -81,7 +81,7 @@ path.
   <Accordion title="Embedding provider switched or stopped working">
     If `memory.search.provider` is unset, OpenClaw uses OpenAI embeddings. Set
     `memory.search.provider` explicitly for Bedrock, DeepInfra, Gemini, GitHub
-    Copilot, LM Studio, local, Mistral, Ollama, Voyage, or OpenAI-compatible
+    Copilot, LM Studio, local, Mistral, Ollama, Voyage AI by MongoDB, or OpenAI-compatible
     embeddings. If the configured provider cannot run, `memory_search` may
     degrade to lexical-only retrieval; runtime failures after a provider is
     already selected do not fall back automatically.

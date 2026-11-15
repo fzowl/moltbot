@@ -139,6 +139,78 @@ it("preserves real default requests, grouping, and configured query parameters",
   ]);
 });
 
+it("sends the requested output dimension and documented limits for the default model", async () => {
+  const { baseUrl, received } = await serve({
+    embeddings: { data: [{ index: 0, embedding: [7, 11] }] },
+  });
+  const { provider } = await voyageMemoryEmbeddingProviderAdapter.create({
+    config: {},
+    provider: "voyage",
+    model: "voyage-4-large",
+    fallback: "none",
+    dimensions: 512,
+    remote: { baseUrl, apiKey: "voyage-loopback-key" },
+  });
+  assert(provider, "expected configured Voyage embedding provider");
+  expect(provider.maxInputTokens).toBe(32000);
+  expect(provider.maxInputsPerRequest).toBe(1000);
+  await provider.embed("question", { inputType: "query" });
+  expect(received).toEqual([
+    [
+      "embeddings",
+      { model: "voyage-4-large", input: ["question"], input_type: "query", output_dimension: 512 },
+    ],
+  ]);
+});
+
+it("sends the requested output dimension in the batch request parameters", async () => {
+  const { baseUrl, received } = await serve(batchResponses);
+  await runBatch({
+    outputDimension: 256,
+    client: {
+      baseUrl,
+      headers: { Authorization: authorization },
+      model: "voyage-4-large",
+      ssrfPolicy: { allowedHostnames: ["127.0.0.1"] },
+    },
+  });
+  assert(received[1], "expected batch submission request");
+  expect(received[1][1]).toMatchObject({
+    request_params: { model: "voyage-4-large", input_type: "document", output_dimension: 256 },
+  });
+});
+
+it.each([
+  ["an Atlas key", "al-fixture-key", {}, undefined, "https://ai.mongodb.com/v1"],
+  ["a standard key", "pa-fixture-key", {}, undefined, "https://api.voyageai.com/v1"],
+  [
+    "an Atlas key with an explicit remote base URL",
+    "al-fixture-key",
+    {},
+    "https://voyage.example/remote/v1",
+    "https://voyage.example/remote/v1",
+  ],
+  [
+    "an Atlas key with an explicit provider base URL",
+    "al-fixture-key",
+    { models: { providers: { voyage: { baseUrl: "https://voyage.example/provider/v1" } } } },
+    undefined,
+    "https://voyage.example/provider/v1",
+  ],
+] as const)(
+  "selects the default host from the key for %s",
+  async (_name, apiKey, config, baseUrl, expected) => {
+    const { runtime } = await voyageMemoryEmbeddingProviderAdapter.create({
+      config: config as never,
+      provider: "voyage",
+      model: "voyage-4-large",
+      fallback: "none",
+      remote: { apiKey, ...(baseUrl ? { baseUrl } : {}) },
+    });
+    expect(runtime?.cacheKeyData).toMatchObject({ baseUrl: expected });
+  },
+);
+
 it.each(["output", "error"] as const)("preserves real batch %s requests", async (kind) => {
   const { baseUrl, received } = await serve({
     ...batchResponses,
